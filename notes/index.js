@@ -33,6 +33,7 @@ Note.init(
     modelName: 'note',
   }
 );
+Note.sync();
 
 app.get('/api/notes', async (req, res) => {
   const notes = await Note.findAll();
@@ -45,6 +46,27 @@ app.post('/api/notes', async (req, res) => {
     return res.json(note);
   } catch (error) {
     return res.status(400).json({ error });
+  }
+});
+
+app.get('/api/notes/:id', async (req, res) => {
+  const note = await Note.findByPk(req.params.id);
+  if (note) {
+    console.log(note);
+    return res.json(note);
+  } else {
+    return res.status(404).end();
+  }
+});
+
+app.put('/api/notes/:id', async (req, res) => {
+  const note = await Note.findByPk(req.params.id);
+  if (note) {
+    note.important = req.body.important;
+    await note.save();
+    return res.json(note);
+  } else {
+    return res.status(404).end();
   }
 });
 
