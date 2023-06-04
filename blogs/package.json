@@ -17,6 +17,7 @@
     "express-async-errors": "^3.1.1",
     "jsonwebtoken": "^9.0.0",
     "pg": "^8.11.0",
-    "sequelize": "^6.32.0"
+    "sequelize": "^6.32.0",
+    "umzug": "^3.2.1"
   }
 }

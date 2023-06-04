@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "migration:down": "node util/rollback.js"
   },
   "author": "Quan Do",
   "license": "MIT",
@@ -16,6 +17,7 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "pg": "^8.11.0",
-    "sequelize": "^6.32.0"
+    "sequelize": "^6.32.0",
+    "umzug": "^3.2.1"
   }
 }
