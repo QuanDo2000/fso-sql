@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { SECRET } = require('../util/config');
+const Session = require('../models/session');
 
 const errorHandler = (error, request, response, next) => {
   console.error(JSON.stringify(error));
@@ -13,9 +14,10 @@ const errorHandler = (error, request, response, next) => {
 
 const tokenExtractor = (req, res, next) => {
   const authorization = req.get('authorization');
+  const token = authorization.substring(7);
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     try {
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+      req.decodedToken = jwt.verify(token, SECRET);
     } catch (err) {
       console.log(err);
       return res.status(401).json({ error: 'token invalid' });
@@ -23,7 +25,27 @@ const tokenExtractor = (req, res, next) => {
   } else {
     return res.status(401).json({ error: 'token missing' });
   }
-  next();
+  Session.findOne({
+    where: {
+      userId: req.decodedToken.id,
+    },
+  })
+    .then((session) => {
+      if (
+        !session ||
+        session.token !== token ||
+        session.token === null ||
+        new Date(session.updatedAt).getTime() + 1000 * 60 * 60 * 24 <
+          new Date().getTime()
+      ) {
+        return res.status(401).json({ error: 'token invalid' });
+      }
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(401).json({ error: 'token invalid' });
+    });
 };
 
 module.exports = {
